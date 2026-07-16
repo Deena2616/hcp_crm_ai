@@ -30,10 +30,6 @@ export default function InteractionHistory() {
     setEditError(null);
   };
 
-  // Sends the natural-language instruction straight to edit_interaction_tool via the
-  // dedicated /api/chat/edit endpoint, pinned to this exact interaction_id. Commits
-  // immediately - there's no separate "click to save" step for edits, unlike the
-  // structured form's new-interaction draft flow.
   const submitEdit = async (interactionId, hcpName) => {
     if (!editText.trim() || editSubmitting) return;
     setEditSubmitting(true);
@@ -61,11 +57,22 @@ export default function InteractionHistory() {
 
   return (
     <section className="history">
-      <div className="history__title">Interaction History</div>
+      <div className="history__header">
+        <h2 className="history__title">Interaction History</h2>
+        <span className="history__count">{items.length} logged</span>
+      </div>
 
-      {status === "loading" && <div className="history__hint">Loading...</div>}
+      {status === "loading" && (
+        <div className="history__state-container">
+          <div className="history__loader"></div>
+          <div className="history__hint">Loading interactions...</div>
+        </div>
+      )}
+      
       {status === "succeeded" && items.length === 0 && (
-        <div className="history__hint">No interactions logged yet.</div>
+        <div className="history__state-container">
+          <div className="history__hint">No interactions logged yet.</div>
+        </div>
       )}
 
       <div className="history__list">
@@ -77,57 +84,86 @@ export default function InteractionHistory() {
           return (
             <div className="history-item card" key={item.id}>
               <div className="history-item__top">
-                <span className={`tag tag--${item.sentiment}`}>{item.sentiment}</span>
-                <span className="history-item__type">{TYPE_LABELS[item.interaction_type] || item.interaction_type}</span>
+                <span className={`tag tag--${item.sentiment || 'neutral'}`}>
+                  {item.sentiment}
+                </span>
+                <span className="history-item__type">
+                  {TYPE_LABELS[item.interaction_type] || item.interaction_type}
+                </span>
                 <span className="history-item__source">via {item.source}</span>
                 <span className="history-item__date">
-                  {new Date(item.occurred_at).toLocaleString()}
+                  {new Date(item.occurred_at).toLocaleString([], {
+                    dateStyle: 'medium',
+                    timeStyle: 'short'
+                  })}
                 </span>
               </div>
 
               {attendees.length > 0 && (
-                <div className="history-item__attendees">Attendees: {attendees.join(", ")}</div>
+                <div className="history-item__attendees">
+                  <strong>Attendees:</strong> {attendees.join(", ")}
+                </div>
               )}
 
               <p className="history-item__notes">{item.summary || item.notes}</p>
 
-              {item.outcomes && <p className="history-item__field"><strong>Outcomes:</strong> {item.outcomes}</p>}
+              {item.outcomes && (
+                <p className="history-item__field">
+                  <strong>Outcomes:</strong> {item.outcomes}
+                </p>
+              )}
               {item.follow_up_actions && (
-                <p className="history-item__field"><strong>Follow-up:</strong> {item.follow_up_actions}</p>
+                <p className="history-item__field">
+                  <strong>Follow-up:</strong> {item.follow_up_actions}
+                </p>
               )}
 
               {(materials.length > 0 || samples.length > 0) && (
                 <div className="history-item__chips">
-                  {materials.map((m) => <span key={m} className="history-item__chip">📄 {m}</span>)}
-                  {samples.map((s) => <span key={s} className="history-item__chip">💊 {s}</span>)}
+                  {materials.map((m) => (
+                    <span key={m} className="history-item__chip history-item__chip--material">
+                      📄 {m}
+                    </span>
+                  ))}
+                  {samples.map((s) => (
+                    <span key={s} className="history-item__chip history-item__chip--sample">
+                      💊 {s}
+                    </span>
+                  ))}
                 </div>
               )}
 
               {editingId === item.id ? (
-                <div className="history-item__edit-row">
-                  <input
-                    autoFocus
-                    placeholder='e.g. "change sentiment to negative" or "add DrugX to samples"'
-                    value={editText}
-                    onChange={(e) => setEditText(e.target.value)}
-                    onKeyDown={(e) => e.key === "Enter" && submitEdit(item.id, item.hcp_name)}
-                    disabled={editSubmitting}
-                  />
-                  <button
-                    className="btn btn--primary btn--sm"
-                    onClick={() => submitEdit(item.id, item.hcp_name)}
-                    disabled={editSubmitting || !editText.trim()}
-                  >
-                    {editSubmitting ? "Applying..." : "Apply"}
-                  </button>
-                  <button className="btn btn--ghost btn--sm" onClick={() => setEditingId(null)} disabled={editSubmitting}>
-                    Cancel
-                  </button>
-                  {editError && <span className="history-item__edit-error">{editError}</span>}
+                <div className="history-item__edit-area">
+                  <div className="history-item__edit-row">
+                    <input
+                      autoFocus
+                      placeholder='e.g. "change sentiment to negative" or "add DrugX to samples"'
+                      value={editText}
+                      onChange={(e) => setEditText(e.target.value)}
+                      onKeyDown={(e) => e.key === "Enter" && submitEdit(item.id, item.hcp_name)}
+                      disabled={editSubmitting}
+                    />
+                    <button
+                      className="btn btn--primary btn--sm"
+                      onClick={() => submitEdit(item.id, item.hcp_name)}
+                      disabled={editSubmitting || !editText.trim()}
+                    >
+                      {editSubmitting ? "Applying..." : "Apply"}
+                    </button>
+                    <button 
+                      className="btn btn--ghost btn--sm" 
+                      onClick={() => setEditingId(null)} 
+                      disabled={editSubmitting}
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                  {editError && <div className="history-item__edit-error">{editError}</div>}
                 </div>
               ) : (
                 <button className="history-item__edit-btn" onClick={() => startEdit(item.id)}>
-                  Edit this entry
+                  ✏️ Edit this entry
                 </button>
               )}
             </div>

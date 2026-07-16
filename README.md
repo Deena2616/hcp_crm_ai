@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # AI-First HCP CRM — Log Interaction Screen
 
 An AI-first Log Interaction screen for a pharmaceutical CRM's Healthcare Professional (HCP)
@@ -270,7 +269,3 @@ scheduling, and safety-flagging — while a structured form remains available fo
 prefer it. LangGraph provides the routing + tool-execution structure, and Groq provides the
 LLM reasoning inside each tool (summarization, entity/sentiment extraction, and
 natural-language edit interpretation).
-=======
-# CRM_HCP
-An AI-first Log Interaction screen for a pharmaceutical CRM's Healthcare Professional (HCP) module.
->>>>>>> 12742b764e8878a6a83826c6743ecf848d40b9c5

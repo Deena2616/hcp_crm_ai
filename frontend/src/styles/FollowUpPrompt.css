@@ -1,0 +1,35 @@
+/* styles/FollowUpPrompt.css */
+.followup-prompt {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.followup-prompt__title {
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.followup-prompt__row {
+  display: flex;
+  gap: 8px;
+}
+
+.followup-prompt__row input {
+  flex: 1;
+  padding: 8px 10px;
+  border: 1px solid var(--border-color, #e2e2e2);
+  border-radius: 8px;
+  font-size: 0.9rem;
+}
+
+.followup-prompt__success {
+  color: var(--success-color, #1b8a5a);
+  font-size: 0.85rem;
+}
+
+.followup-prompt__error {
+  color: var(--error-color, #c0392b);
+  font-size: 0.85rem;
+}

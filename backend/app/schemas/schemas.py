@@ -79,6 +79,15 @@ class InteractionOut(BaseModel):
     class Config:
         from_attributes = True
 
+# ---------- Interaction Search ----------
+class InteractionSearchParams(BaseModel):
+    sentiment: Optional[str] = None
+    hcp_name: Optional[str] = None
+    keyword: Optional[str] = None
+    interaction_type: Optional[str] = None
+    date_from: Optional[str] = None
+    date_to: Optional[str] = None
+    limit: int = 10
 
 # ---------- FollowUp ----------
 class FollowUpCreate(BaseModel):

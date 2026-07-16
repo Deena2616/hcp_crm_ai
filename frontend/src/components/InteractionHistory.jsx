@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchInteractions, editInteraction } from "../redux/slices/interactionsSlice";
+import { fetchInteractions } from "../redux/slices/interactionsSlice";
+import { sendEditMessage } from "../redux/slices/chatSlice";
 import "../styles/InteractionHistory.css";
 
 const TYPE_LABELS = {
@@ -16,6 +17,8 @@ export default function InteractionHistory() {
   const { items, status } = useSelector((state) => state.interactions);
   const [editingId, setEditingId] = useState(null);
   const [editText, setEditText] = useState("");
+  const [editSubmitting, setEditSubmitting] = useState(false);
+  const [editError, setEditError] = useState(null);
 
   useEffect(() => {
     dispatch(fetchInteractions());
@@ -24,13 +27,32 @@ export default function InteractionHistory() {
   const startEdit = (id) => {
     setEditingId(id);
     setEditText("");
+    setEditError(null);
   };
 
-  const submitEdit = (interactionId) => {
-    if (!editText.trim()) return;
-    dispatch(editInteraction({ interactionId, updates: { edit_reason: editText.trim() } }));
-    setEditingId(null);
-    setEditText("");
+  // Sends the natural-language instruction straight to edit_interaction_tool via the
+  // dedicated /api/chat/edit endpoint, pinned to this exact interaction_id. Commits
+  // immediately - there's no separate "click to save" step for edits, unlike the
+  // structured form's new-interaction draft flow.
+  const submitEdit = async (interactionId, hcpName) => {
+    if (!editText.trim() || editSubmitting) return;
+    setEditSubmitting(true);
+    setEditError(null);
+    try {
+      const res = await dispatch(
+        sendEditMessage({ message: editText.trim(), interactionId, hcpName })
+      ).unwrap();
+      if (res.data?.status === "updated" || res.tool_calls?.includes("edit_interaction_tool")) {
+        setEditingId(null);
+        setEditText("");
+      } else {
+        setEditError(res.reply || "Couldn't apply that edit — try rephrasing.");
+      }
+    } catch (e) {
+      setEditError("Something went wrong applying that edit. Please try again.");
+    } finally {
+      setEditSubmitting(false);
+    }
   };
 
   const parseList = (raw) => {
@@ -88,10 +110,20 @@ export default function InteractionHistory() {
                     placeholder='e.g. "change sentiment to negative" or "add DrugX to samples"'
                     value={editText}
                     onChange={(e) => setEditText(e.target.value)}
-                    onKeyDown={(e) => e.key === "Enter" && submitEdit(item.id)}
+                    onKeyDown={(e) => e.key === "Enter" && submitEdit(item.id, item.hcp_name)}
+                    disabled={editSubmitting}
                   />
-                  <button className="btn btn--primary btn--sm" onClick={() => submitEdit(item.id)}>Apply</button>
-                  <button className="btn btn--ghost btn--sm" onClick={() => setEditingId(null)}>Cancel</button>
+                  <button
+                    className="btn btn--primary btn--sm"
+                    onClick={() => submitEdit(item.id, item.hcp_name)}
+                    disabled={editSubmitting || !editText.trim()}
+                  >
+                    {editSubmitting ? "Applying..." : "Apply"}
+                  </button>
+                  <button className="btn btn--ghost btn--sm" onClick={() => setEditingId(null)} disabled={editSubmitting}>
+                    Cancel
+                  </button>
+                  {editError && <span className="history-item__edit-error">{editError}</span>}
                 </div>
               ) : (
                 <button className="history-item__edit-btn" onClick={() => startEdit(item.id)}>

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # AI-First HCP CRM — Log Interaction Screen
 
 An AI-first Log Interaction screen for a pharmaceutical CRM's Healthcare Professional (HCP)
@@ -269,3 +270,7 @@ scheduling, and safety-flagging — while a structured form remains available fo
 prefer it. LangGraph provides the routing + tool-execution structure, and Groq provides the
 LLM reasoning inside each tool (summarization, entity/sentiment extraction, and
 natural-language edit interpretation).
+=======
+# hcp_crm_ai
+This repo implements an AI-assisted CRM for healthcare professionals (HCPs). It provides a React frontend and a FastAPI backend that together let field reps log interactions, search and edit past interactions, schedule follow-ups, and ask an embedded AI assistant to extract or summarize interaction details.
+>>>>>>> 6670c3fc4043e4ebd423cf6569d6b92e4f8baccb

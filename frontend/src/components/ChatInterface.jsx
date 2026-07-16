@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { sendChatMessage } from "../redux/slices/chatSlice";
 import { fetchInteractions } from "../redux/slices/interactionsSlice";
-import "./ChatInterface.css";
+import "../styles/ChatInterface.css";
 
 export default function ChatInterface() {
   const dispatch = useDispatch();

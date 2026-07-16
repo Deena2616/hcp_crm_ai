@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchInteractions, editInteraction } from "../redux/slices/interactionsSlice";
-import "./InteractionHistory.css";
+import "../styles/InteractionHistory.css";
 
 const TYPE_LABELS = {
   meeting: "Meeting",

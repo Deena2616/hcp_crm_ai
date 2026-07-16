@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { submitInteractionForm, resetSubmitStatus, fetchInteractions, clearDraft } from "../redux/slices/interactionsSlice";
 import HcpAutocomplete from "./HcpAutocomplete";
 import api from "../api/client";
-import "./StructuredForm.css";
+import "../styles/StructuredForm.css";
 
 const INTERACTION_TYPES = [
   { value: "meeting", label: "Meeting" },

@@ -2,7 +2,7 @@ import React from "react";
 import StructuredForm from "./StructuredForm";
 import ChatInterface from "./ChatInterface";
 import InteractionHistory from "./InteractionHistory";
-import "./LogInteractionScreen.css";
+import "../styles/LogInteractionScreen.css";
 
 export default function LogInteractionScreen() {
   return (

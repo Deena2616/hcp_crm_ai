@@ -1,0 +1,69 @@
+.btn {
+  border: none;
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  font-size: 13.5px;
+  padding: 9px 16px;
+  transition: background 0.15s ease, transform 0.05s ease;
+}
+
+.btn:active {
+  transform: scale(0.98);
+}
+
+.btn--primary {
+  background: var(--clr-primary);
+  color: #fff;
+}
+.btn--primary:hover {
+  background: var(--clr-primary-dark);
+}
+.btn--primary:disabled {
+  background: #C7D2E5;
+  color: #fff;
+  cursor: not-allowed;
+}
+
+.btn--ghost {
+  background: var(--clr-surface);
+  color: var(--clr-ink-muted);
+  border: 1px solid var(--clr-border);
+}
+.btn--ghost:hover {
+  background: var(--clr-surface-sunken);
+}
+
+.btn--sm {
+  padding: 6px 11px;
+  font-size: 12.5px;
+}
+
+.card {
+  background: var(--clr-surface);
+  border: 1px solid var(--clr-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-card);
+}
+
+.tag {
+  display: inline-flex;
+  align-items: center;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 9px;
+  border-radius: 999px;
+  text-transform: capitalize;
+}
+
+.tag--positive {
+  background: var(--clr-positive-tint);
+  color: var(--clr-positive);
+}
+.tag--neutral {
+  background: var(--clr-neutral-tint);
+  color: var(--clr-neutral-tag);
+}
+.tag--negative {
+  background: var(--clr-danger-tint);
+  color: var(--clr-negative);
+}

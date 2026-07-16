@@ -1,0 +1,21 @@
+# Python
+__pycache__/
+*.pyc
+venv/
+.venv/
+*.egg-info/
+
+# Env files
+.env
+
+# Node / React
+node_modules/
+build/
+.npm-global/
+
+# OS
+.DS_Store
+
+# DB
+*.db
+*.sqlite3

@@ -1,0 +1,25 @@
+.app-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 16px 24px;
+  background: var(--clr-surface);
+  border-bottom: 1px solid var(--clr-border);
+  flex-shrink: 0;
+}
+
+.app-header__title {
+  font-weight: 700;
+  font-size: 16px;
+  color: var(--clr-ink);
+}
+
+.app-header__sep {
+  color: var(--clr-ink-muted);
+}
+
+.app-header__module {
+  font-size: 14.5px;
+  color: var(--clr-ink-muted);
+  font-weight: 500;
+}

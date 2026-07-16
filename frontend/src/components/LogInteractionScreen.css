@@ -1,0 +1,20 @@
+.log-screen {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.log-screen__panels {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 20px;
+  height: calc(100vh - 150px);
+  min-height: 560px;
+}
+
+@media (max-width: 900px) {
+  .log-screen__panels {
+    grid-template-columns: 1fr;
+    height: auto;
+  }
+}

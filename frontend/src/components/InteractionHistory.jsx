@@ -59,7 +59,7 @@ export default function InteractionHistory() {
     <section className="history">
       <div className="history__header">
         <h2 className="history__title">Interaction History</h2>
-        <span className="history__count">{items.length} logged</span>
+        <span className="history__count">{items.length} records</span>
       </div>
 
       {status === "loading" && (
@@ -68,108 +68,161 @@ export default function InteractionHistory() {
           <div className="history__hint">Loading interactions...</div>
         </div>
       )}
-      
+
       {status === "succeeded" && items.length === 0 && (
         <div className="history__state-container">
           <div className="history__hint">No interactions logged yet.</div>
         </div>
       )}
 
-      <div className="history__list">
-        {items.map((item) => {
-          const attendees = parseList(item.attendees);
-          const materials = parseList(item.materials_shared);
-          const samples = parseList(item.samples_provided);
+      {status === "succeeded" && items.length > 0 && (
+        <div className="history__table-wrapper">
+          <table className="history__table">
+            <thead>
+              <tr>
+                <th>Type / Channel</th>
+                <th>Sentiment</th>
+                {/* <th>Attendees</th> */}
+                <th>Notes & Summary</th>
+                <th>Artifacts & Samples</th>
+                <th className="text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {items.map((item) => {
+                const attendees = parseList(item.attendees);
+                const materials = parseList(item.materials_shared);
+                const samples = parseList(item.samples_provided);
+                const isEditing = editingId === item.id;
 
-          return (
-            <div className="history-item card" key={item.id}>
-              <div className="history-item__top">
-                <span className={`tag tag--${item.sentiment || 'neutral'}`}>
-                  {item.sentiment}
-                </span>
-                <span className="history-item__type">
-                  {TYPE_LABELS[item.interaction_type] || item.interaction_type}
-                </span>
-                <span className="history-item__source">via {item.source}</span>
-                <span className="history-item__date">
-                  {new Date(item.occurred_at).toLocaleString([], {
-                    dateStyle: 'medium',
-                    timeStyle: 'short'
-                  })}
-                </span>
-              </div>
+                return (
+                  <React.Fragment key={item.id}>
+                    <tr className={`history__table-row ${isEditing ? "history__table-row--editing" : ""}`}>
+                      {/* Type / Channel */}
+                      <td>
+                        <div className="history-cell__type-group">
+                          <span className="history-item__type">
+                            {TYPE_LABELS[item.interaction_type] || item.interaction_type}
+                          </span>
+                          <span className="history-item__source">via {item.source}</span>
+                          <span className="history-item__date">
+                            {new Date(item.occurred_at).toLocaleString([], {
+                              dateStyle: 'short',
+                              timeStyle: 'short'
+                            })}
+                          </span>
+                        </div>
+                      </td>
 
-              {attendees.length > 0 && (
-                <div className="history-item__attendees">
-                  <strong>Attendees:</strong> {attendees.join(", ")}
-                </div>
-              )}
+                      {/* Sentiment */}
+                      <td>
+                        <span className={`tag tag--${item.sentiment || 'neutral'}`}>
+                          {item.sentiment}
+                        </span>
+                      </td>
 
-              <p className="history-item__notes">{item.summary || item.notes}</p>
+                      {/* Attendees */}
+                      {/* <td>
+                        {attendees.length > 0 ? (
+                          <div className="history-cell__attendees">
+                            {attendees.join(", ")}
+                          </div>
+                        ) : (
+                          <span className="history-cell__empty">—</span>
+                        )}
+                      </td> */}
 
-              {item.outcomes && (
-                <p className="history-item__field">
-                  <strong>Outcomes:</strong> {item.outcomes}
-                </p>
-              )}
-              {item.follow_up_actions && (
-                <p className="history-item__field">
-                  <strong>Follow-up:</strong> {item.follow_up_actions}
-                </p>
-              )}
+                      {/* Notes & Outcomes */}
+                      <td>
+                        <div className="history-cell__content">
+                          <p className="history-item__notes">{item.summary || item.notes}</p>
+                          {item.outcomes && (
+                            <p className="history-item__field">
+                              <strong>Outcomes:</strong> {item.outcomes}
+                            </p>
+                          )}
+                          {item.follow_up_actions && (
+                            <p className="history-item__field">
+                              <strong>Follow-up:</strong> {item.follow_up_actions}
+                            </p>
+                          )}
+                        </div>
+                      </td>
 
-              {(materials.length > 0 || samples.length > 0) && (
-                <div className="history-item__chips">
-                  {materials.map((m) => (
-                    <span key={m} className="history-item__chip history-item__chip--material">
-                      📄 {m}
-                    </span>
-                  ))}
-                  {samples.map((s) => (
-                    <span key={s} className="history-item__chip history-item__chip--sample">
-                      💊 {s}
-                    </span>
-                  ))}
-                </div>
-              )}
+                      {/* Artifacts & Chips */}
+                      <td>
+                        {(materials.length > 0 || samples.length > 0) ? (
+                          <div className="history-item__chips">
+                            {materials.map((m) => (
+                              <span key={m} className="history-item__chip history-item__chip--material">
+                                📄 {m}
+                              </span>
+                            ))}
+                            {samples.map((s) => (
+                              <span key={s} className="history-item__chip history-item__chip--sample">
+                                💊 {s}
+                              </span>
+                            ))}
+                          </div>
+                        ) : (
+                          <span className="history-cell__empty">—</span>
+                        )}
+                      </td>
 
-              {editingId === item.id ? (
-                <div className="history-item__edit-area">
-                  <div className="history-item__edit-row">
-                    <input
-                      autoFocus
-                      placeholder='e.g. "change sentiment to negative" or "add DrugX to samples"'
-                      value={editText}
-                      onChange={(e) => setEditText(e.target.value)}
-                      onKeyDown={(e) => e.key === "Enter" && submitEdit(item.id, item.hcp_name)}
-                      disabled={editSubmitting}
-                    />
-                    <button
-                      className="btn btn--primary btn--sm"
-                      onClick={() => submitEdit(item.id, item.hcp_name)}
-                      disabled={editSubmitting || !editText.trim()}
-                    >
-                      {editSubmitting ? "Applying..." : "Apply"}
-                    </button>
-                    <button 
-                      className="btn btn--ghost btn--sm" 
-                      onClick={() => setEditingId(null)} 
-                      disabled={editSubmitting}
-                    >
-                      Cancel
-                    </button>
-                  </div>
-                  {editError && <div className="history-item__edit-error">{editError}</div>}
-                </div>
-              ) : (
-                <button className="history-item__edit-btn" onClick={() => startEdit(item.id)}>
-                  ✏️ Edit this entry
-                </button>
-              )}
-            </div>
-          );
-        })}
-      </div>
+                      {/* Edit Trigger Trigger */}
+                      <td className="text-right">
+                        {!isEditing && (
+                          <button 
+                            className="history-item__edit-btn" 
+                            onClick={() => startEdit(item.id)}
+                          >
+                            ✏️ Edit
+                          </button>
+                        )}
+                      </td>
+                    </tr>
+
+                    {/* Expandable Inline Edit Drawer Row */}
+                    {isEditing && (
+                      <tr className="history__edit-row-container">
+                        <td colSpan="6">
+                          <div className="history-item__edit-area">
+                            <div className="history-item__edit-row">
+                              <input
+                                autoFocus
+                                placeholder='e.g. "change sentiment to negative" or "add DrugX to samples"'
+                                value={editText}
+                                onChange={(e) => setEditText(e.target.value)}
+                                onKeyDown={(e) => e.key === "Enter" && submitEdit(item.id, item.hcp_name)}
+                                disabled={editSubmitting}
+                              />
+                              <button
+                                className="btn btn--primary btn--sm"
+                                onClick={() => submitEdit(item.id, item.hcp_name)}
+                                disabled={editSubmitting || !editText.trim()}
+                              >
+                                {editSubmitting ? "Applying..." : "Apply"}
+                              </button>
+                              <button 
+                                className="btn btn--ghost btn--sm" 
+                                onClick={() => setEditingId(null)} 
+                                disabled={editSubmitting}
+                              >
+                                Cancel
+                              </button>
+                            </div>
+                            {editError && <div className="history-item__edit-error">{editError}</div>}
+                          </div>
+                        </td>
+                      </tr>
+                    )}
+                  </React.Fragment>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      )}
     </section>
   );
 }
